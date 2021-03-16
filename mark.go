@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/rwxrob/auth-go"
@@ -32,6 +33,15 @@ func init() {
 
 	x.Method = func(args []string) error {
 
+		description := uniq.IsoSecond()
+
+		if len(args) > 0 {
+			description += "\n" + strings.Join(args, " ")
+			if len(description) > 140 {
+				return errors.New("must be less than 125 characters (140 total)")
+			}
+		}
+
 		// get the twitchid from config
 		config, err := conf.New()
 		if err != nil {
@@ -55,7 +65,7 @@ func init() {
 		// create the data to post
 		jsn, err := json.Marshal(map[string]string{
 			"user_id":     twitchid,
-			"description": uniq.IsoSecond(),
+			"description": description,
 		})
 		if err != nil {
 			return err
