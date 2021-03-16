@@ -33,10 +33,16 @@ func init() {
 
 	x.Method = func(args []string) error {
 
-		description := uniq.IsoSecond()
+		description := uniq.IsoSecond() + "\n"
 
 		if len(args) > 0 {
-			description += "\n" + strings.Join(args, " ")
+
+			// if first char 1-9, assume isosec
+			if 49 <= args[0][2] && args[0][2] <= 57 {
+				description = ""
+			}
+
+			description += strings.Join(args, " ")
 			if len(description) > 140 {
 				return errors.New("must be less than 125 characters (140 total)")
 			}
