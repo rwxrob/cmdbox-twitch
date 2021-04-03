@@ -24,27 +24,35 @@ func init() {
 		Places a mark in the current active video and the later resulting
 		VOD for use when editing or helping others find a location.
 
-		The name of the mark is the current time to the second. 
+		The name of the mark is the current time to the second wrapped in
+		square brackets.
 
 		If an optional string argument is passed, it will be saved as
 		a mnemonic helper for later lookup when using the marks to create
 		highlight videos. This is helpful because Twitch does not allow long
-		names in marks.`
+		names in marks.
+
+		When the optional string begins with a square bracket it is assumed
+		to be a unique identifier wrapped in brackets, which could be the
+		iso-second required for a KEG Zettel Reference Identifier (ex:
+		[20060102150415]), but not necessarily
+
+		`
 
 	x.Method = func(args []string) error {
 
-		description := uniq.IsoSecond() + "\n"
+		description := "[" + uniq.IsoSecond() + "]\n"
 
 		if len(args) > 0 {
 
-			// if first char 1-9, assume isosec
-			if 49 <= args[0][2] && args[0][2] <= 57 {
+			// if first char is [ assume identifier
+			if args[0][2] == '[' {
 				description = ""
 			}
 
 			description += strings.Join(args, " ")
 			if len(description) > 140 {
-				return errors.New("must be less than 125 characters (140 total)")
+				return errors.New("must be less than 123 characters (140 total)")
 			}
 		}
 
